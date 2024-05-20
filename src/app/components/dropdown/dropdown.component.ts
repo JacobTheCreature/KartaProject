@@ -17,6 +17,7 @@ import { GameService } from '../../services/game.service';
 export class DropdownComponent implements OnInit{
   @Output() gameSelected = new EventEmitter<Game>();
   
+  
   games: Game[] = [];
 
   constructor(private gameService: GameService) {}
@@ -27,14 +28,31 @@ export class DropdownComponent implements OnInit{
   }
 
   onSelect(game: Game) {
-    this.gameService.getGame(game);
+    this.gameService.getGame(game.id).subscribe(selectedGame => {
+      this.gameSelected.emit(selectedGame);
+    });
+  }
+
+  updateDropdown(): void {
+    this.gameService.getGames().subscribe(games => {
+      this.games = games;
+      if (this.games.length > 0) {
+        const firstGameId = this.games[0].id;
+        this.gameService.getGame(firstGameId).subscribe(selectedGame => {
+          this.gameSelected.emit(selectedGame);
+        });
+      }
+    });
   }
 
   ngOnInit(): void {
     this.gameService.getGames().subscribe(games => {
       this.games = games;
       if (this.games.length > 0) {
-        this.gameService.getGame(this.games[0]);
+        const firstGameId = this.games[0].id;
+        this.gameService.getGame(firstGameId).subscribe(selectedGame => {
+          this.gameSelected.emit(selectedGame);
+        });
       }
     });
   }
