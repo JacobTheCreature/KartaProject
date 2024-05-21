@@ -23,7 +23,8 @@ export class GameService {
   getGame(gameID: number): Observable<Game> {
     const url = `http://localhost:3000/game/${gameID}`;
     return this._http.get<Game>(url).pipe(
-      tap(game => this.selectedGame = game)
+      tap(game => {
+        this.selectedGame = game})
     );
   }
 
@@ -32,6 +33,7 @@ export class GameService {
   }
 
    createGame(game: Game): Observable<Game> {
+    console.log(game.img);
      const url = `http://localhost:3000/game/`;
      return this._http.post<Game>(url, game, options);
    }
