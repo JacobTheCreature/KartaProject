@@ -33,6 +33,7 @@ export class GameframeComponent {
   }
 
   getSanitizedUrl(url: string | undefined): SafeResourceUrl | undefined {
+    console.log("HERE is HOJFHEFH")
     return url ? this.sanitizer.bypassSecurityTrustResourceUrl(url) : undefined;
   }
 }
