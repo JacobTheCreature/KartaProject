@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { DropdownComponent } from "../../components/dropdown/dropdown.component";
 import { Game } from '../../game';
 import { GameService } from '../../services/game.service';
@@ -13,28 +13,40 @@ import { NgIf } from '@angular/common';
     imports: [DropdownComponent, FormsModule, NgIf]
 })
 export class HeaderComponent implements OnInit{
-  @Output() add = new EventEmitter<Game>();
-  @Output() edit = new EventEmitter<Game>();
-  @Output() delete = new EventEmitter<Game>();
+
+  @ViewChild(DropdownComponent) dropdownComponent!: DropdownComponent;
 
   selectedGame: Game | undefined;
   games: Game[] = [];
-  newGame: Game = { id: 0, title: '', url: '' }; // Initialize new game object
+  newGame: Game = { id: 0, title: '', url: '', img: ''};
+  gameLabel: string = '';
+  gameUrl: string = '';
+  gameImg: string = '';
+  tempTitle: string = '';
+  tempUrl: string = '';
+  tempImg: string = '';
 
   constructor(public gameService: GameService) {}
 
   onGameSelected(game: Game) {
     this.selectedGame = game;
+    this.gameLabel = this.selectedGame!.title;
+    this.gameUrl = this.selectedGame!.url;
+    this.gameImg = this.selectedGame!.img;
   }
 
   createGame(): void {
+    this.newGame.title = this.tempTitle;
+    this.newGame.url = this.tempUrl;
+    this.newGame.img = this.tempImg;
+    console.log(this.newGame.img);
     this.gameService.createGame(this.newGame).subscribe((createdGame) => {
-      // Optionally, you can perform any action after the game is created
       console.log('Game created successfully:', createdGame);
-      // Clear the form fields after successful creation
-      this.games.push(createdGame);
-      this.newGame = { id: 0, title: '', url: '' };
-      
+      this.newGame = { id: 0, title: '', url: '', img: ''};
+      this.tempTitle = '';
+      this.tempUrl = '';
+      this.tempImg = '';
+      this.dropdownComponent.updateDropdown();
     }, error => {
       console.error('Error creating game:', error);
     });
@@ -42,9 +54,11 @@ export class HeaderComponent implements OnInit{
 
   updateGame(): void {
     if (this.selectedGame) {
+      this.selectedGame.title = this.gameLabel;
+      this.selectedGame.url = this.gameUrl;
       this.gameService.updateGame(this.selectedGame).subscribe(() => {
-        // Optionally, you can perform any action after the game is updated
         console.log('Game updated successfully!');
+        this.dropdownComponent.updateDropdown();
       }, error => {
         console.error('Error updating game:', error);
       });
@@ -54,11 +68,19 @@ export class HeaderComponent implements OnInit{
   deleteGame(): void {
     if (this.selectedGame) {
       this.gameService.deleteGame(this.selectedGame.id).subscribe(() => {
-        // Optionally, you can perform any action after the game is updated
         console.log('Game deleted successfully!');
+        this.dropdownComponent.updateDropdown();
+        this.dropdownComponent.defaultGame();
       }, error => {
         console.error('Error delete game:', error);
       });
+    }
+  }
+
+  editCancel(): void {
+    if (this.selectedGame) {
+      this.gameLabel = this.selectedGame.title;
+      this.gameUrl = this.selectedGame.url;
     }
   }
 
@@ -69,6 +91,8 @@ export class HeaderComponent implements OnInit{
         const firstGameId = this.games[0].id;
         this.gameService.getGame(firstGameId).subscribe(selectedGame => {
           this.selectedGame = selectedGame;
+          this.gameLabel = this.selectedGame.title;
+          this.gameUrl = this.selectedGame.url;
         });
       }
     });
