@@ -4,6 +4,6 @@
     </button>
     <div class="dropdown-menu theme-dark" aria-labelledby="dropdownMenuButton">
       <input class="dropdown-item search-bar" type="text" placeholder="Search.." id="myInput" [(ngModel)]="searchInput" (keyup)="filter()">
-      <a class="dropdown-item" *ngFor="let game of filteredList" (click)="onSelect(game)">{{game.title}}</a>
+      <a class="dropdown-item" routerLink='/' routerLinkActive='active' *ngFor="let game of filteredList" (click)="onSelect(game)">{{game.title}}</a>
     </div>
   </div>
