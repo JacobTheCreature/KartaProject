@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Game } from '../../game';
 import { GameService } from '../../services/game.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -13,27 +13,30 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './gameframe.component.html',
   styleUrl: './gameframe.component.css'
 })
-export class GameframeComponent {
+export class GameframeComponent{
   game?: Game;
 
   constructor(
     public gameService: GameService,
     private sanitizer: DomSanitizer,
-    private route: ActivatedRoute
   ) {}
 
-  ngOnInit(): void {
-    const gameID = Number(this.route.snapshot.paramMap.get('id'));
-    if (gameID) {
-      this.gameService.getGame(gameID).subscribe(game => {
-        this.gameService.setSelectedGame(game);
-        this.game = game;
-      });
+  isValidUrl(url: string): boolean {
+    try {
+      new URL(url);
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 
   getSanitizedUrl(url: string | undefined): SafeResourceUrl | undefined {
-    console.log("HERE is HOJFHEFH")
-    return url ? this.sanitizer.bypassSecurityTrustResourceUrl(url) : undefined;
+    console.log("GameFrameComponent reloading src");
+    if (url && this.isValidUrl(url)) {
+      return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    } else {
+      console.error('Invalid URL:', url);
+      return undefined;
+    }
   }
 }
