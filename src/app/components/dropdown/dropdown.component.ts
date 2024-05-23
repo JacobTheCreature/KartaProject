@@ -4,6 +4,8 @@ import { NgFor, NgIf } from '@angular/common';
 import { Game } from '../../game';
 import { GameService } from '../../services/game.service';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { GameUpdateService } from '../../services/game-update.service';
 
 @Component({
   selector: 'app-dropdown',
@@ -11,7 +13,8 @@ import { FormsModule } from '@angular/forms';
   imports: [
     NgFor,
     NgIf,
-    FormsModule
+    FormsModule,
+    RouterModule
   ],
   templateUrl: './dropdown.component.html',
   styleUrl: './dropdown.component.css'
@@ -24,7 +27,7 @@ export class DropdownComponent implements OnInit{
   games: Game[] = [];
   filteredList: Game[] | undefined;
 
-  constructor(private gameService: GameService) {}
+  constructor(private gameService: GameService, private gameUpdateService: GameUpdateService) {}
 
   getGames(): void {
     this.gameService.getGames()
@@ -34,6 +37,8 @@ export class DropdownComponent implements OnInit{
   onSelect(game: Game) {
     this.gameService.getGame(game.id).subscribe(selectedGame => {
       this.gameSelected.emit(selectedGame);
+      this.gameService.emitGameChange();
+      console.log(selectedGame.image, "This is on select");
     });
   }
 
@@ -41,13 +46,6 @@ export class DropdownComponent implements OnInit{
     this.gameService.getGames().subscribe(games => {
       this.games = games;
       this.filteredList = games;
-    });
-  }
-
-  defaultGame(): void {
-    const firstGameId = this.games[0].id;
-    this.gameService.getGame(firstGameId).subscribe(selectedGame => {
-      this.gameSelected.emit(selectedGame);
     });
   }
 
@@ -63,12 +61,9 @@ export class DropdownComponent implements OnInit{
     this.gameService.getGames().subscribe(games => {
       this.games = games;
       this.filteredList = games;
-      if (this.games.length > 0) {
-        const firstGameId = this.games[0].id;
-        this.gameService.getGame(firstGameId).subscribe(selectedGame => {
-          this.gameSelected.emit(selectedGame);
-        });
-      }
+      this.gameUpdateService.gameUpdate$.subscribe(() => {
+        this.updateDropdown();
+      });
     });
   }
 }
