@@ -62,3 +62,45 @@ a {
 #delete:hover {
   background-color: red;
 }
+
+.d-modal {
+  background-color: #282828;
+  color: white;
+}
+
+.d-form {
+  background-color: #3f3f3f;
+  color: white;
+  border-color: #2f2b3a;
+}
+
+.d-cbtn {
+  background-color: #76737e;
+  color: white;
+}
+
+.d-sbtn {
+  background-color: #9171f8;
+  color: white;
+}
+
+.d-cbtn:hover {
+  filter: brightness(85%);
+}
+
+.d-sbtn:hover {
+  filter: brightness(85%);
+}
+
+.d-xbtn{
+  background-color: #76737e;
+}
+
+.search-bar {
+  margin-right: 5px; /* Adjust as needed for spacing */
+  padding: 7.4px 12px; /* Adjust as needed for button size */
+  background-color: #3f3f3f; /* Adjust as needed for styling */
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
